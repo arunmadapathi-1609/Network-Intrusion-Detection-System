@@ -27,10 +27,7 @@ def health():
         "status": "healthy"
     }
 
-
-# ----------------------------
 # Single Prediction
-# ----------------------------
 @app.post("/predict")
 def predict_endpoint(data: NetworkFlow):
     try:
@@ -44,9 +41,7 @@ def predict_endpoint(data: NetworkFlow):
         )
 
 
-# ----------------------------
 # Batch Prediction
-# ----------------------------
 @app.post("/predict_batch")
 def predict_batch_endpoint(
     data: List[dict] = Body(...)

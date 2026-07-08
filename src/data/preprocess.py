@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 
-
 def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
 
     # Remove leading/trailing spaces
@@ -27,12 +26,10 @@ def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def split_features_target(df: pd.DataFrame):
-    
     X = df.drop("Label", axis=1)
     y = df["Label"]
-
+    
     return X, y
-
 
 def preprocess_input(df: pd.DataFrame, feature_columns):
 
