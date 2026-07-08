@@ -1,12 +1,3 @@
-import os
-import sys
-
-sys.path.append(
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..")
-    )
-)
-
 import streamlit as st
 import pandas as pd
 import requests
@@ -14,13 +5,10 @@ import time
 import plotly.express as px
 import os
 
-API_URL = "https://network-intrusion-detection-system-1-9ay5.onrender.com/predict_batch"
-st.set_page_config(
-    page_title="Network Intrusion Detection System",
-    page_icon="🛡️",
-    layout="wide"
+API_URL = os.getenv(
+    "API_URL",
+    "https://network-intrusion-detection-system-1-9ay5.onrender.com/predict_batch"
 )
-
 
 st.title("🛡️ Network Intrusion Detection System")
 

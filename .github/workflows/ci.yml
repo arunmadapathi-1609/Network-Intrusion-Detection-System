@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -46,6 +45,10 @@ jobs:
           test -f models/feature_columns.pkl
           test -f models/label_encoder.pkl
 
-      - name: Build Docker Image
+      - name: Build FastAPI Docker Image
         run: |
-          docker build -t network-intrusion-detection .
+          docker build -f Dockerfile -t network-intrusion-api .
+
+      - name: Build Streamlit Docker Image
+        run: |
+          docker build -f Dockerfile.streamlit -t network-intrusion-streamlit .
