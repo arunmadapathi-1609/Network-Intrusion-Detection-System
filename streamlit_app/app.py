@@ -5,11 +5,7 @@ import time
 import plotly.express as px
 import os
 
-API_URL = os.getenv(
-    "API_URL",
-    "http://127.0.0.1:8000/predict_batch"
-)
-
+API_URL = "https://network-intrusion-detection-system-1-9ay5.onrender.com/predict_batch"
 st.set_page_config(
     page_title="Network Intrusion Detection System",
     page_icon="🛡️",
