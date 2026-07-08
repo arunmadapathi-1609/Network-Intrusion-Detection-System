@@ -28,12 +28,11 @@ RUN pip install --upgrade pip && \
 COPY . .
 
 # -----------------------------
-# Expose Ports
+# Expose FastAPI Port
 # -----------------------------
 EXPOSE 8000
-EXPOSE 8501
 
 # -----------------------------
-# Start FastAPI and Streamlit
+# Start FastAPI
 # -----------------------------
-CMD sh -c "uvicorn src.app.main:app --host 0.0.0.0 --port 8000 & streamlit run streamlit_app/app.py --server.address=0.0.0.0 --server.port=8501"
+CMD ["uvicorn", "src.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
