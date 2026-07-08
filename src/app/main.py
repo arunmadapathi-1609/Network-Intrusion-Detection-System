@@ -1,101 +1,72 @@
-from fastapi import FastAPI, HTTPException
-import joblib
-import pandas as pd
-import os
+from typing import List
 
-from app.schema import NetworkTraffic
+from fastapi import FastAPI, HTTPException, Body
 
-
-# ==============================
-# FastAPI App
-# ==============================
+from src.app.schemas import NetworkFlow
+from src.serving.inference import predict
 
 app = FastAPI(
     title="Network Intrusion Detection API",
-    description="ML based Network Intrusion Detection System using XGBoost",
+    description="End-to-End Network Intrusion Detection System using XGBoost",
     version="1.0.0"
 )
 
 
-# ==============================
-# Load Model Artifacts
-# ==============================
-
-MODEL_PATH = "models/intrusion_model.pkl"
-ENCODER_PATH = "models/label_encoder.pkl"
-FEATURE_PATH = "models/feature_columns.pkl"
-
-
-model = joblib.load(MODEL_PATH)
-label_encoder = joblib.load(ENCODER_PATH)
-feature_columns = joblib.load(FEATURE_PATH)
-
-
-# ==============================
-# Health Check
-# ==============================
-
 @app.get("/")
 def home():
-
     return {
         "status": "running",
-        "service": "Network Intrusion Detection API",
-        "model": "XGBoost"
+        "project": "Network Intrusion Detection System",
+        "algorithm": "XGBoost"
     }
 
 
-# ==============================
-# Prediction API
-# ==============================
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy"
+    }
 
+
+# ----------------------------
+# Single Prediction
+# ----------------------------
 @app.post("/predict")
-def predict(data: NetworkTraffic):
-
+def predict_endpoint(data: NetworkFlow):
     try:
-
-        input_features = data.features
-
-
-        # Convert input to dataframe
-
-        df = pd.DataFrame(
-            [input_features]
-        )
-
-
-        # Ensure correct feature order
-
-        df = df.reindex(
-            columns=feature_columns,
-            fill_value=0
-        )
-
-
-        # Prediction
-
-        prediction = model.predict(df)
-
-
-        # Decode label
-
-        attack_type = label_encoder.inverse_transform(
-            prediction
-        )[0]
-
-
-        return {
-
-            "prediction": int(prediction[0]),
-            "attack_type": attack_type,
-            "message": "Traffic classified successfully"
-
-        }
-
+        result = predict(data.model_dump(by_alias=True))
+        return result[0]
 
     except Exception as e:
-
         raise HTTPException(
             status_code=500,
             detail=str(e)
         )
+
+
+# ----------------------------
+# Batch Prediction
+# ----------------------------
+@app.post("/predict_batch")
+def predict_batch_endpoint(
+    data: List[dict] = Body(...)
+):
+    try:
+        return predict(data)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "src.app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True
+    )

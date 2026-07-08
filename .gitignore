@@ -1,24 +1,47 @@
+# -----------------------------
 # Python
+# -----------------------------
 __pycache__/
-*.pyc
+*.py[cod]
 
-# Virtual Environment
+# -----------------------------
+# Virtual Environments
+# -----------------------------
+.venv/
 venv/
+env/
 .env
 
-# Data
-data/raw/
-data/processed/
+# -----------------------------
+# Jupyter
+# -----------------------------
+.ipynb_checkpoints/
 
-# Models
-models/*.pkl
-
+# -----------------------------
 # MLflow
+# -----------------------------
 mlruns/
 
-# Reports
-reports/
-
+# -----------------------------
 # IDE
+# -----------------------------
 .vscode/
 .idea/
+
+# -----------------------------
+# Logs
+# -----------------------------
+*.log
+
+# -----------------------------
+# Training Data
+# -----------------------------
+Data/raw/
+Data/processed/
+Data/demo_network_traffic.csv
+
+# -----------------------------
+# OS Files
+# -----------------------------
+.DS_Store
+Thumbs.db

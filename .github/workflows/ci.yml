@@ -1,0 +1,51 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-validate:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Upgrade pip
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Validate FastAPI Application
+        run: |
+          python -c "from src.app.main import app; print('FastAPI application loaded successfully.')"
+
+      - name: Validate Streamlit Application
+        run: |
+          python -m py_compile streamlit_app/app.py
+
+      - name: Verify Model Files
+        run: |
+          test -f models/intrusion_model.pkl
+          test -f models/feature_columns.pkl
+          test -f models/label_encoder.pkl
+
+      - name: Build Docker Image
+        run: |
+          docker build -t network-intrusion-detection .

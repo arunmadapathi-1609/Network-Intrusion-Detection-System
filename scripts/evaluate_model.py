@@ -1,186 +1,131 @@
-import os
+from pathlib import Path
+import time
 import joblib
 import pandas as pd
 
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
     recall_score,
     f1_score,
     classification_report,
-    confusion_matrix
+    confusion_matrix,
 )
 
-
-# ==============================
-# Paths
-# ==============================
-
-DATA_PATH = "data/processed/network_intrusion_small.csv"
-
-MODEL_PATH = "models/intrusion_model.pkl"
-ENCODER_PATH = "models/label_encoder.pkl"
-FEATURE_PATH = "models/feature_columns.pkl"
+from src.features.build_features import build_features
 
 
-# ==============================
-# Load Dataset
-# ==============================
+BASE_DIR = Path(__file__).resolve().parents[1]
 
-print("\nLoading dataset...")
+DATA_PATH = BASE_DIR / "Data" / "processed" / "network_intrusion_small.csv"
+
+MODEL_DIR = BASE_DIR / "models"
+REPORT_DIR = BASE_DIR / "reports"
+
+REPORT_DIR.mkdir(exist_ok=True)
+
+print("Loading dataset...")
 
 df = pd.read_csv(DATA_PATH)
 
-print("Dataset loaded successfully")
-print("Dataset Shape:", df.shape)
+X, y, label_encoder, feature_columns = build_features(df)
 
-
-# ==============================
-# Load Model Artifacts
-# ==============================
-
-print("\nLoading trained model...")
-
-model = joblib.load(MODEL_PATH)
-label_encoder = joblib.load(ENCODER_PATH)
-feature_columns = joblib.load(FEATURE_PATH)
-
-print("Model loaded successfully")
-
-
-# ==============================
-# Prepare Data
-# ==============================
-
-TARGET_COLUMN = "Label"
-
-X = df[feature_columns]
-y = df[TARGET_COLUMN]
-
-
-# ==============================
-# Encode Labels
-# ==============================
-
-y_encoded = label_encoder.transform(y)
-
-
-# ==============================
-# Prediction
-# ==============================
-
-print("\nRunning predictions...")
-
-y_pred = model.predict(X)
-
-
-# ==============================
-# Evaluation Metrics
-# ==============================
-
-accuracy = accuracy_score(
-    y_encoded,
-    y_pred
+# Same split used during training
+_, X_test, _, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.20,
+    random_state=42,
+    stratify=y
 )
 
-precision = precision_score(
-    y_encoded,
-    y_pred,
-    average="weighted",
-    zero_division=0
-)
+print("Loading model...")
 
-recall = recall_score(
-    y_encoded,
-    y_pred,
-    average="weighted",
-    zero_division=0
-)
+model = joblib.load(MODEL_DIR / "intrusion_model.pkl")
 
-f1 = f1_score(
-    y_encoded,
-    y_pred,
-    average="weighted",
-    zero_division=0
-)
+print("Model loaded successfully.")
 
+start = time.time()
 
-# ==============================
-# Print Results
-# ==============================
+y_pred = model.predict(X_test)
 
-print("\n" + "=" * 60)
-print("NETWORK INTRUSION DETECTION MODEL EVALUATION")
-print("=" * 60)
+prediction_time = time.time() - start
 
-print(f"Accuracy  : {accuracy:.4f}")
-print(f"Precision : {precision:.4f}")
-print(f"Recall    : {recall:.4f}")
-print(f"F1 Score  : {f1:.4f}")
-
-print("=" * 60)
-
-
-# ==============================
-# Classification Report
-# ==============================
-
-print("\nClassification Report\n")
+metrics = {
+    "Accuracy": accuracy_score(y_test, y_pred),
+    "Precision": precision_score(
+        y_test,
+        y_pred,
+        average="weighted",
+        zero_division=0,
+    ),
+    "Recall": recall_score(
+        y_test,
+        y_pred,
+        average="weighted",
+        zero_division=0,
+    ),
+    "Weighted F1": f1_score(
+        y_test,
+        y_pred,
+        average="weighted",
+        zero_division=0,
+    ),
+    "Macro F1": f1_score(
+        y_test,
+        y_pred,
+        average="macro",
+        zero_division=0,
+    ),
+}
 
 report = classification_report(
-    y_encoded,
+    y_test,
     y_pred,
     target_names=label_encoder.classes_,
-    zero_division=0
+    zero_division=0,
 )
 
+cm = confusion_matrix(y_test, y_pred)
+
+print("\n" + "=" * 60)
+print("NETWORK INTRUSION DETECTION EVALUATION")
+print("=" * 60)
+
+for name, value in metrics.items():
+    print(f"{name:<15}: {value:.4f}")
+
+print(f"Prediction Time : {prediction_time:.4f} sec")
+
+print("=" * 60)
+
+print("\nClassification Report\n")
 print(report)
 
-
-# ==============================
-# Confusion Matrix
-# ==============================
-
 print("\nConfusion Matrix\n")
-
-cm = confusion_matrix(
-    y_encoded,
-    y_pred
-)
-
 print(cm)
 
 
-# ==============================
-# Save Evaluation Report
-# ==============================
+pd.DataFrame(
+    cm,
+    index=label_encoder.classes_,
+    columns=label_encoder.classes_,
+).to_csv(REPORT_DIR / "confusion_matrix.csv")
 
-os.makedirs("reports", exist_ok=True)
+with open(REPORT_DIR / "evaluation_report.txt", "w") as f:
 
-report_path = "reports/evaluation_report.txt"
-
-with open(report_path, "w") as f:
-
-    f.write("NETWORK INTRUSION DETECTION MODEL EVALUATION\n")
+    f.write("NETWORK INTRUSION DETECTION EVALUATION\n")
     f.write("=" * 60 + "\n\n")
 
-    f.write(f"Dataset Size : {df.shape}\n\n")
+    for name, value in metrics.items():
+        f.write(f"{name:<15}: {value:.4f}\n")
 
-    f.write(f"Accuracy  : {accuracy:.4f}\n")
-    f.write(f"Precision : {precision:.4f}\n")
-    f.write(f"Recall    : {recall:.4f}\n")
-    f.write(f"F1 Score  : {f1:.4f}\n\n")
+    f.write(f"\nPrediction Time : {prediction_time:.4f} sec\n\n")
 
     f.write("Classification Report\n")
-    f.write("-" * 40 + "\n")
+    f.write("=" * 60 + "\n")
     f.write(report)
 
-    f.write("\nConfusion Matrix\n")
-    f.write("-" * 40 + "\n")
-    f.write(str(cm))
-
-
-print("\nEvaluation report saved successfully!")
-print(f"Location: {report_path}")
-
-print("\nEvaluation Completed Successfully!")
+print("\nEvaluation completed successfully.")
+print(f"Reports saved to: {REPORT_DIR}")
