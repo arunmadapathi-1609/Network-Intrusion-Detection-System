@@ -1,51 +1,46 @@
 # 🛡️ Network Intrusion Detection System
 
-```{=html}
-<p align="center">
-```
+> **Enterprise-grade Machine Learning system for detecting malicious network traffic using XGBoost, FastAPI, Streamlit, Docker, and AWS EC2.**
+
 ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.116-009688?logo=fastapi)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.47-FF4B4B?logo=streamlit)
 ![XGBoost](https://img.shields.io/badge/XGBoost-ML-orange)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker)
+![AWS EC2](https://img.shields.io/badge/AWS-EC2-orange?logo=amazonaws)
 
-```{=html}
-</p>
-```
+---
+
 ## 📌 Project Overview
 
-An end-to-end Machine Learning project that detects malicious network
-traffic using **XGBoost**. The application provides a **FastAPI REST
-API** for inference and a **Streamlit dashboard** for batch CSV
-prediction. It follows a modular, production-oriented structure and is
-containerized with Docker for reproducible deployment.
+This project is an end-to-end **Machine Learning Network Intrusion Detection System** that classifies network traffic into **Benign** or multiple attack categories. It provides a **FastAPI REST API** for inference and a **Streamlit dashboard** for batch CSV prediction with interactive analytics.
 
-## 🎯 Problem Statement
+---
 
-Modern networks generate massive traffic, making manual inspection
-impractical. This project automatically classifies network flows as
-**BENIGN** or **Malicious**, helping accelerate security analysis.
 
-### Key Features
+## ✨ Features
 
--   XGBoost-based intrusion detection
--   FastAPI REST API
--   Streamlit batch prediction UI
--   CSV upload & download
--   Confidence score for each prediction
--   Docker support
--   Modular project structure
+- 🚀 XGBoost-based Intrusion Detection
+- 🌐 FastAPI REST API
+- 📊 Interactive Streamlit Dashboard
+- 📁 Batch CSV Prediction
+- 📈 Attack Distribution & Security Analytics
+- 🎯 Confidence Score for every prediction
+- 🐳 Docker & Docker Compose Support
+- ☁️ AWS EC2 Deployment
+
+---
 
 ## 🏗️ Architecture
 
-``` text
+```text
 Network Traffic CSV
         │
         ▼
  Data Preprocessing
         │
         ▼
- Feature Alignment
+ Feature Engineering
         │
         ▼
    XGBoost Model
@@ -53,48 +48,83 @@ Network Traffic CSV
   ┌─────┴─────┐
   ▼           ▼
 FastAPI   Streamlit
-  │           │
-  └─────┬─────┘
+        │
         ▼
  Prediction Results
 ```
 
+---
+
 ## 📂 Project Structure
 
-``` text
+```text
 Network-Intrusion-Detection-System/
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
 ├── Data/
+│   ├── raw/
+│   └── processed/
+│
 ├── models/
+│   ├── intrusion_model.pkl
+│   ├── feature_columns.pkl
+│   └── label_encoder.pkl
+│
 ├── notebooks/
+│   └── EDA.ipynb
+│
 ├── scripts/
+│   ├── prepare_data.py
+│   ├── train_model.py
+│   └── evaluate_model.py
+│
 ├── src/
 │   ├── app/
-│   ├── serving/
-│   ├── features/
 │   ├── data/
+│   ├── features/
+│   ├── serving/
 │   └── utils/
+│
 ├── streamlit_app/
-├── requirements.txt
+│   ├── app.py
+│   ├── api.py
+│   ├── preprocessing.py
+│   ├── visualization.py
+│   └── utils.py
+│
 ├── Dockerfile
-├── .dockerignore
-├── .gitignore
+├── Dockerfile.streamlit
+├── docker-compose.yml
+├── requirements.txt
 └── README.md
 ```
 
+---
+
 ## 🛠️ Tech Stack
 
-  Category     Technologies
-  ------------ -----------------------
-  ML           XGBoost, Scikit-learn
-  Backend      FastAPI, Uvicorn
-  Frontend     Streamlit
-  Data         Pandas, NumPy
-  Deployment   Docker, Render
+| Category | Technologies |
+|----------|--------------|
+| Language | Python |
+| Machine Learning | XGBoost, Scikit-learn |
+| Backend | FastAPI, Uvicorn |
+| Frontend | Streamlit |
+| Data Processing | Pandas, NumPy |
+| Visualization | Plotly |
+| Deployment | Docker, Docker Compose |
+| Cloud | AWS EC2 |
+| CI/CD | GitHub Actions |
+
+---
 
 ## 🚀 Local Setup
 
-``` bash
+```bash
 git clone https://github.com/arunmadapathi-1609/Network-Intrusion-Detection-System.git
+
 cd Network-Intrusion-Detection-System
 
 python -m venv .venv
@@ -107,55 +137,77 @@ pip install -r requirements.txt
 
 ### Run FastAPI
 
-``` bash
-python -m uvicorn src.app.main:app --reload
+```bash
+uvicorn src.app.main:app --reload
 ```
 
-Swagger: http://127.0.0.1:8000/docs
+Open:
+
+```
+http://localhost:8000/docs
+```
 
 ### Run Streamlit
 
-``` bash
+```bash
 streamlit run streamlit_app/app.py
 ```
 
-Dashboard: http://localhost:8501
+Open:
 
-## 📡 API
-
-  Method   Endpoint         Description
-  -------- ---------------- -------------------
-  GET      /                API status
-  GET      /health          Health check
-  POST     /predict         Single prediction
-  POST     /predict_batch   Batch prediction
-
-### Example Response
-
-``` json
-{
-  "prediction_id": 0,
-  "attack_type": "BENIGN",
-  "confidence": 0.9987,
-  "traffic_status": "🟢 Safe Traffic"
-}
 ```
+http://localhost:8501
+```
+
+---
 
 ## 🐳 Docker
 
-``` bash
-docker build -t network-intrusion-detection .
-docker run -p 8000:8000 -p 8501:8501 network-intrusion-detection
+```bash
+docker-compose build
+
+docker-compose up -d
 ```
 
-## ☁️ Deployment
+---
 
-Deploy the Docker image to Render or another container platform.
+## ☁️ AWS EC2 Deployment
 
-## 🔮 Future Improvements
+- Ubuntu 24.04 LTS
+- Docker Engine
+- Docker Compose
+- FastAPI + Streamlit Containers
+- Public EC2 Deployment
+- REST API Documentation
 
--   Real-time packet capture
--   SHAP explainability
--   Authentication
--   MLflow model registry
--   GitHub Actions CI/CD
+---
+
+## 📡 API Endpoints
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/` | API Status |
+| GET | `/health` | Health Check |
+| POST | `/predict` | Single Prediction |
+| POST | `/predict_batch` | Batch Prediction |
+
+---
+
+## 📊 Dashboard
+
+### 🏠 Streamlit Dashboard
+
+![Dashboard](screenshots/dashboard.jpeg)
+
+### 🛡️ Security Overview 
+![Security Overview](screenshots/security_overview.jpeg)
+
+### 📊 Attack Analysis
+
+![Attack Analysis](screenshots/attack_analysis.jpeg)
+
+### 📋 Prediction Report
+
+![Prediction Report](screenshots/prediction_report.jpeg)
+
+---
