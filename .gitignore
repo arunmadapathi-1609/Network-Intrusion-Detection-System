@@ -38,7 +38,6 @@ mlruns/
 # -----------------------------
 Data/raw/
 Data/processed/
-Data/demo_network_traffic.csv
 
 # -----------------------------
 # Notebooks
@@ -49,7 +48,6 @@ notebooks/
 # Git
 # -----------------------------
 .git/
-.github/
 
 # -----------------------------
 # OS Files

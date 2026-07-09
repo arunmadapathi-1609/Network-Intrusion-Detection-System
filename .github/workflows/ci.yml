@@ -45,6 +45,9 @@ jobs:
           test -f models/feature_columns.pkl
           test -f models/label_encoder.pkl
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build FastAPI Docker Image
         run: |
           docker build -f Dockerfile -t network-intrusion-api .

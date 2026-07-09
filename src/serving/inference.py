@@ -33,11 +33,11 @@ def predict(features):
 
     results = []
 
-    for pred, attack, prob in zip(predictions,attack_types,probabilities):
-        
+    for pred, attack, prob in zip(predictions, attack_types, probabilities):
+
         traffic_status = (
             "🟢 Safe Traffic"
-            if attack == "BENIGN"
+            if attack.upper() == "BENIGN"
             else "🔴 Malicious Traffic"
         )
 

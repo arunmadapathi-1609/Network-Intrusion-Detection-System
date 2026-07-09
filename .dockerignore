@@ -3,7 +3,6 @@
 # -----------------------------
 .git
 .github
-.gitignore
 
 # -----------------------------
 # Python Virtual Environments
@@ -19,7 +18,6 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-*.so
 
 # -----------------------------
 # Jupyter
@@ -33,7 +31,7 @@ notebooks/
 mlruns/
 
 # -----------------------------
-# VS Code / IDE
+# IDE
 # -----------------------------
 .vscode/
 .idea/
@@ -45,21 +43,18 @@ logs/
 *.log
 
 # -----------------------------
-# Data
-# -----------------------------
-Data/raw/
-Data/demo_network_traffic.csv
-
-# Keep processed data (if needed)
-!Data/processed/
-
-# -----------------------------
 # OS Files
 # -----------------------------
 .DS_Store
 Thumbs.db
 
 # -----------------------------
+# Large datasets
+# -----------------------------
+Data/raw/
+
+# -----------------------------
 # Documentation
 # -----------------------------
 GeneratedLabelledFlows.md5
+README_assets/
